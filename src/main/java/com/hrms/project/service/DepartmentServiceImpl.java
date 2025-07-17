@@ -2,11 +2,13 @@ package com.hrms.project.service;
 
 import com.hrms.project.entity.Department;
 import com.hrms.project.entity.Employee;
+import com.hrms.project.entity.Team;
 import com.hrms.project.handlers.DepartmentNotFoundException;
 import com.hrms.project.handlers.EmployeeNotFoundException;
 import com.hrms.project.payload.DepartmentDTO;
 import com.hrms.project.payload.EmployeeDepartmentDTO;
 import com.hrms.project.payload.EmployeeTeamResponse;
+import com.hrms.project.payload.TeamResponse;
 import com.hrms.project.repository.DepartmentRepository;
 import com.hrms.project.repository.EmployeeRepository;
 import org.modelmapper.ModelMapper;
@@ -39,6 +41,7 @@ public class DepartmentServiceImpl implements DepartmentService{
         return modelMapper.map(departmentDTO,DepartmentDTO.class);
 
     }
+
 
     @Override
     public EmployeeDepartmentDTO getEmployeesByDepartmentId(String departmentId) {
@@ -110,4 +113,36 @@ public class DepartmentServiceImpl implements DepartmentService{
 
 
     }
+
+    @Override
+    public EmployeeDepartmentDTO getEmployeeByEmployeeId(String employeeId) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new EmployeeNotFoundException("Employee not found with id: " + employeeId));
+
+        Department dept = employee.getDepartment();
+
+        EmployeeDepartmentDTO employeeDepartmentDTO = new EmployeeDepartmentDTO();
+        employeeDepartmentDTO.setDepartmentId(dept.getDepartmentId());
+        employeeDepartmentDTO.setDepartmentName(dept.getDepartmentName());
+
+        List<EmployeeTeamResponse> employeeTeamResponses = dept.getEmployee().stream()
+                .map(emp -> {
+                    Employee empl = employeeRepository.findById(emp.getEmployeeId())
+                            .orElseThrow(() -> new EmployeeNotFoundException("Employee not found with id: " + emp.getEmployeeId()));
+
+                    EmployeeTeamResponse response = new EmployeeTeamResponse();
+                    response.setEmployeeId(empl.getEmployeeId());
+                    response.setDisplayName(empl.getDisplayName());
+                    response.setJobTitlePrimary(empl.getJobTitlePrimary());
+                    response.setWorkEmail(empl.getWorkEmail());
+                    response.setWorkNumber(empl.getWorkNumber());
+
+                    return response;
+                }).toList();
+
+        employeeDepartmentDTO.setEmployeeList(employeeTeamResponses);
+
+        return employeeDepartmentDTO;
+    }
+
 }

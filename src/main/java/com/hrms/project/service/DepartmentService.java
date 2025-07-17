@@ -22,4 +22,6 @@ public interface DepartmentService {
     List<DepartmentDTO> getAllDepartmentDetails();
 
     DepartmentDTO getByDepartmentId(String departmentId);
+
+  EmployeeDepartmentDTO getEmployeeByEmployeeId(String employeeId);
 }

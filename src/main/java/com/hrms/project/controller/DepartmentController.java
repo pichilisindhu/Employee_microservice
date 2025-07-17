@@ -52,8 +52,18 @@ public class DepartmentController {
 
         @GetMapping("/get/department/{departmentId}")
     public ResponseEntity<DepartmentDTO> getDepartmentById(@PathVariable String departmentId) {
-        return new ResponseEntity<>(departmentService.getByDepartmentId(departmentId),HttpStatus.OK);
-    }
+            return new ResponseEntity<>(departmentService.getByDepartmentId(departmentId), HttpStatus.OK);
+        }
+        @GetMapping("/{employeeId}/department/employees")
+    public ResponseEntity<EmployeeDepartmentDTO> getEmployeesByEmployeeId(@PathVariable String employeeId) {
+
+        return new ResponseEntity<EmployeeDepartmentDTO>(departmentService.getEmployeeByEmployeeId(employeeId),HttpStatus.OK);
+
+
+        }
+
+
+
 
 
 }

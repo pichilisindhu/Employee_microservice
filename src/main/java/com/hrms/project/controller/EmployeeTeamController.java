@@ -1,6 +1,7 @@
 package com.hrms.project.controller;
 
 import com.hrms.project.entity.Team;
+import com.hrms.project.payload.EmployeeTeamDTO;
 import com.hrms.project.payload.TeamController;
 import com.hrms.project.payload.TeamResponse;
 //import com.hrms.project.service.TeamService;
@@ -49,21 +50,13 @@ public class EmployeeTeamController {
         return new ResponseEntity<>(teamService.UpdateTeam(teamId,teamDTO), HttpStatus.OK);
     }
 
+    @GetMapping("/{teamId}/team/employee")
+    public ResponseEntity<EmployeeTeamDTO> getEmployeeByTeamId(@PathVariable String teamId) {
+        return new ResponseEntity<>(teamService.getEmployeeByTeamId(teamId),HttpStatus.OK);
 
 
 
-
-
-//    @PostMapping("/team/{teamId}/project")
-//    public ResponseEntity<String> addProject(@PathVariable String teamId,
-//                                             @RequestBody TeamController teamController) {
-//
-//        teamService.addProject(teamId,teamController);
-//        return new ResponseEntity<>("Project Added Successfully", HttpStatus.OK);
-//
-//
-//
-//    }
+    }
 
     @GetMapping("/team/projects/{teamId}")
     public ResponseEntity<List<String>> getProjectsByTeam(@PathVariable String teamId) {

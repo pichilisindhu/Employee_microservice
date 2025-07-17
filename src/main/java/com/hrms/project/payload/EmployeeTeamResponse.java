@@ -15,4 +15,5 @@ public class EmployeeTeamResponse {
     private String jobTitlePrimary;
     private String workEmail;
     private String workNumber;
+
 }

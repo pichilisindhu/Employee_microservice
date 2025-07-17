@@ -7,5 +7,4 @@ public interface FileService {
 
     String uploadImage(String path, MultipartFile file) throws IOException;
 
-    //string updateImage(Long id, MultipartFile image);
 }

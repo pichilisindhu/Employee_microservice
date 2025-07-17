@@ -17,5 +17,5 @@ public class PanDTO {
     private String dateOfBirth;
     private String parentsName;
     private String employeeId;
-  //  private String EmployeeName;
+
 }

@@ -7,6 +7,7 @@ import com.hrms.project.handlers.APIException;
 import com.hrms.project.handlers.EmployeeNotFoundException;
 import com.hrms.project.handlers.ProjectNotFoundException;
 import com.hrms.project.handlers.TeamNotFoundException;
+import com.hrms.project.payload.EmployeeTeamDTO;
 import com.hrms.project.payload.EmployeeTeamResponse;
 import com.hrms.project.payload.TeamController;
 import com.hrms.project.payload.TeamResponse;
@@ -95,6 +96,7 @@ public class TeamServiceImpl {
                         response.setWorkEmail(emp.getWorkEmail());
                         response.setWorkNumber(emp.getWorkNumber());
                         response.setJobTitlePrimary(emp.getJobTitlePrimary());
+
 
                         return response;
                     }).toList();
@@ -213,6 +215,22 @@ public class TeamServiceImpl {
                 .toList();
     }
 
+    public EmployeeTeamDTO getEmployeeByTeamId(String teamId) {
+
+        Team team=teamRepository.findById(teamId)
+                .orElseThrow(() -> new TeamNotFoundException("Team not found with id " + teamId));
+
+        List<String> employeeId=new ArrayList<>();
+        List<Employee> employee=team.getEmployees().stream().toList();
+
+        for(Employee employee1:employee){
+            employeeId.add(employee1.getEmployeeId());
+        }
+        EmployeeTeamDTO employeeTeamDTO = new EmployeeTeamDTO();
+        employeeTeamDTO.setTeamId(teamId);
+        employeeTeamDTO.setEmployeeId(employeeId);
+        return employeeTeamDTO;
+    }
 }
 
 

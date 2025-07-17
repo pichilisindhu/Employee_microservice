@@ -11,13 +11,4 @@ import java.util.Optional;
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, String> {
 
-
-//    List<Employee> findByEmployeeRole(String role);
-//
-//
-//
-//    List<Employee> findAllByDepartment_DepartmentId(String departmentId);
-//
-//
-//    Employee findByEmployeeName(String name);
 }

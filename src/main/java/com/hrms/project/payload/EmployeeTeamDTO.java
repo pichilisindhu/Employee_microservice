@@ -10,11 +10,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmployeeDepartmentDTO {
+public class EmployeeTeamDTO {
 
-    private String departmentId;
-    private String departmentName;
-
-
-    private List<EmployeeTeamResponse> employeeList;
+    private String teamId;
+    private List<String> employeeId;
 }
