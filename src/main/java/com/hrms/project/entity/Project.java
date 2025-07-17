@@ -4,22 +4,21 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Project {
 
     @Id
-
     private String projectId;
+
     private String title;
     private String client;
     private String description;
@@ -28,15 +27,10 @@ public class Project {
     private LocalDate startDate;
     private LocalDate endDate;
 
-
-
     @ManyToOne
-
     @JoinColumn(name = "team_id")
     private Team team;
 
     @ManyToMany(mappedBy = "projects")
     private List<Employee> employees;
-
-
 }

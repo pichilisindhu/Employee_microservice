@@ -12,7 +12,7 @@ import java.util.List;
 @Component
 public interface EmployeeService {
 
-    EmployeeDTO createData(MultipartFile image, EmployeeDTO employeeDTO) throws IOException;
+    EmployeeDTO createData(MultipartFile employeeImage, EmployeeDTO employeeDTO) throws IOException;
 
     EmployeeDTO getEmployeeById(String id);
 
@@ -20,7 +20,7 @@ public interface EmployeeService {
 
     EmployeeDTO deleteEmployee(String id);
 
-    EmployeeDTO updateEmployee(String id, MultipartFile image ,EmployeeDTO employeeDTO) throws IOException;
+    EmployeeDTO updateEmployee(String id, MultipartFile employeeImage ,EmployeeDTO employeeDTO) throws IOException;
 
     ContactDetailsDTO getEmployeeContactDetails(String employeeId);
 

@@ -11,30 +11,29 @@ import lombok.*;
 
 import java.time.LocalDate;
 
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"employee"})
-@ToString(exclude = {"employee"})
-@Entity
+@EqualsAndHashCode(exclude = "employee")
+@ToString(exclude = "employee")
 public class DrivingLicense {
 
     @Id
     private String licenseNumber;
+
     private String name;
-    private String dateOfBirth;
+    private LocalDate dateOfBirth;
     private String bloodGroup;
     private String fatherName;
     private LocalDate issueDate;
     private LocalDate expiresOn;
     private String address;
+    private String licenseImage;
 
     @OneToOne
-    @JoinColumn(name="employee_id")
+    @JoinColumn(name = "employee_id")
     @JsonBackReference
     private Employee employee;
-
-
-
 }

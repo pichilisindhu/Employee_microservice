@@ -30,6 +30,7 @@ public class PassportDetails {
     private String placeOfIssue;
     private String placeOfBirth;
     private LocalDate dateOfExpiration;
+    private String passportImage;
 
     @OneToOne
  @JoinColumn(name="employee_id")

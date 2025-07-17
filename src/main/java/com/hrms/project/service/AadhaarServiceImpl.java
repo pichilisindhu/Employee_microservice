@@ -8,7 +8,11 @@ import com.hrms.project.repository.AadhaarDetailsRepository;
 import com.hrms.project.repository.EmployeeRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Service
 public class AadhaarServiceImpl {
@@ -22,15 +26,24 @@ public class AadhaarServiceImpl {
     @Autowired
     private ModelMapper modelMapper;
 
-    public AadhaarCardDetails createAadhaar(String employeeId,AadhaarCardDetails aadhaarCardDetails) {
+    @Autowired
+    private FileService fileService;
+
+    @Value("${project.image}")
+    private String path;
+
+    public AadhaarCardDetails createAadhaar(String employeeId, MultipartFile aadhaarImage,AadhaarCardDetails aadhaarCardDetails) throws IOException {
 
         Employee employee=employeeRepository.findById(employeeId)
                 .orElseThrow(()->new EmployeeNotFoundException("employee not found with id: " + employeeId));
 
         if( aadhaarDetailsRepository.findById(aadhaarCardDetails.getAadhaarNumber()).isEmpty() ) {
+            if (aadhaarImage != null && !aadhaarImage.isEmpty()) {
+                String fileName = fileService.uploadImage(path, aadhaarImage);
+               aadhaarCardDetails.setUploadAadhaar(fileName);
+            }
             aadhaarCardDetails.setEmployee(employee);
             aadhaarDetailsRepository.save(aadhaarCardDetails);
-
         }
         else
         {
@@ -51,7 +64,6 @@ public class AadhaarServiceImpl {
 
     public AadhaarCardDetails getAadhaarByEmployeeId(String employeeId) {
 
-
         Employee employee=employeeRepository.findById(employeeId).orElseThrow(() ->
                 new EmployeeNotFoundException("Employee Not Found with id: " + employeeId));
 
@@ -68,15 +80,15 @@ public class AadhaarServiceImpl {
     }
 
 
-    public AadhaarCardDetails updateAadhaar(String employeeId,AadhaarCardDetails aadhaarCardDetails) {
-        Employee employee=employeeRepository.findById(employeeId).orElseThrow(() -> new EmployeeNotFoundException("Employee Not Found"));
+    public AadhaarCardDetails updateAadhaar(String employeeId,MultipartFile aadhaarImage, AadhaarCardDetails aadhaarCardDetails) {
+        Employee employee=employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new EmployeeNotFoundException("Employee Not Found with the id: " + employeeId));
 
         AadhaarCardDetails existing=aadhaarDetailsRepository.findByEmployee_EmployeeId(employeeId);
         if(existing==null)
         {
             throw new APIException("Aadhaar card Details not found for employee with id: " + employeeId);
         }
-
 
         if (!existing.getAadhaarNumber().equals(aadhaarCardDetails.getAadhaarNumber())) {
             throw new APIException("Aadhaar number cannot be changed once submitted");
@@ -87,11 +99,10 @@ public class AadhaarServiceImpl {
         existing.setAadhaarName(aadhaarCardDetails.getAadhaarName());
         existing.setAadhaarNumber(aadhaarCardDetails.getAadhaarNumber());
         existing.setGender(aadhaarCardDetails.getGender());
+        existing.setUploadAadhaar(aadhaarCardDetails.getUploadAadhaar());
 
         AadhaarCardDetails aadhaarDetails=aadhaarDetailsRepository.save(existing);
 
         return aadhaarDetails;
     }
-
-
 }

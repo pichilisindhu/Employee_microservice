@@ -3,21 +3,22 @@ package com.hrms.project.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Entity
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
-@Data
+@AllArgsConstructor
+@EqualsAndHashCode(exclude = "employee")
+@ToString(exclude = "employee")
 public class AadhaarCardDetails {
 
     @Id
     private String aadhaarNumber;
+
     private String enrollmentNumber;
     private LocalDate dateOfBirth;
     private String aadhaarName;
@@ -25,11 +26,8 @@ public class AadhaarCardDetails {
     private String gender;
     private String uploadAadhaar;
 
-
     @OneToOne
     @JoinColumn(name = "employee_id", referencedColumnName = "employeeId")
     @JsonBackReference
     private Employee employee;
-
-
 }

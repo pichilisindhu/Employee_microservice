@@ -12,6 +12,8 @@ import java.time.LocalDate;
 @Data
 public class PassportDetailsDTO {
 
+    private String passportImage;
+
     private String passportNumber;
     private String countryCode;
     private String passportType;

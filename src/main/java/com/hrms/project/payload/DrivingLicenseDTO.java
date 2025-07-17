@@ -12,9 +12,11 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class DrivingLicenseDTO {
 
+    private String licenseImage;
+
     private String licenseNumber;
     private String name;
-    private String dateOfBirth;
+    private LocalDate dateOfBirth;
     private String bloodGroup;
     private String fatherName;
     private LocalDate issueDate;

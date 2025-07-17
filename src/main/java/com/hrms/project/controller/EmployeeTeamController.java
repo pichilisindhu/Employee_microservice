@@ -46,12 +46,12 @@ public class EmployeeTeamController {
 
     @PutMapping("/team/employee/{teamId}")
     public ResponseEntity<String> updateTeam(@PathVariable String teamId, @Valid @RequestBody TeamController teamDTO) {
-
-        teamService.addEmployee(teamId,teamDTO);
-
-        return new ResponseEntity<>("Employee Added Successfully", HttpStatus.OK);
-
+        return new ResponseEntity<>(teamService.UpdateTeam(teamId,teamDTO), HttpStatus.OK);
     }
+
+
+
+
 
 
 //    @PostMapping("/team/{teamId}/project")

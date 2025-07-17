@@ -32,12 +32,14 @@ public class EmployeeController {
     private String path;
 
     @PostMapping("/employee")
-    public ResponseEntity<EmployeeDTO> createEmployees(@RequestPart(value = "image", required = false) MultipartFile image,
+    public ResponseEntity<EmployeeDTO> createEmployees(@RequestPart(value = "employeeImage", required = false) MultipartFile employeeImage,
                                                        @Valid @RequestPart(value = "employee") EmployeeDTO employeeDTO) throws IOException {
 
-        EmployeeDTO saved = employeeService.createData(image, employeeDTO);
+        EmployeeDTO saved = employeeService.createData(employeeImage, employeeDTO);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
+
+
 
 
     @GetMapping("/employee/{employeeId}/contact")
@@ -129,11 +131,11 @@ public class EmployeeController {
 
     @PutMapping("/employee/{id}")
     public ResponseEntity<EmployeeDTO> updateEmployee(
-            @RequestPart(value = "image", required = false) MultipartFile image,
+            @RequestPart(value = "employeeImage", required = false) MultipartFile employeeImage,
             @PathVariable String id,
             @Valid @RequestPart(value = "employee") EmployeeDTO employeeDTO) throws IOException {
 
-        EmployeeDTO updatedEmployeeDetails = employeeService.updateEmployee(id, image, employeeDTO);
+        EmployeeDTO updatedEmployeeDetails = employeeService.updateEmployee(id, employeeImage, employeeDTO);
         return new ResponseEntity<>(updatedEmployeeDetails, HttpStatus.OK);
     }
 

@@ -34,6 +34,7 @@ public class DepartmentServiceImpl implements DepartmentService{
         Department dept=new Department();
         dept.setDepartmentId(departmentDTO.getDepartmentId());
         dept.setDepartmentName(departmentDTO.getDepartmentName());
+        dept.setDepartmentDescription(departmentDTO.getDepartmentDescription());
         departmentRepository.save(dept);
         return modelMapper.map(departmentDTO,DepartmentDTO.class);
 

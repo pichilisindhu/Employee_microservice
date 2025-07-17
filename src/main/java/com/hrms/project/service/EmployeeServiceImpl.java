@@ -1,6 +1,7 @@
 package com.hrms.project.service;
 import com.hrms.project.entity.Department;
 import com.hrms.project.entity.Employee;
+import com.hrms.project.entity.Project;
 import com.hrms.project.entity.Team;
 import com.hrms.project.handlers.APIException;
 import com.hrms.project.handlers.DepartmentNotFoundException;
@@ -49,7 +50,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
     @Override
-    public EmployeeDTO createData(MultipartFile image, EmployeeDTO employeeDTO) throws IOException {
+    public EmployeeDTO createData(MultipartFile employeeImage, EmployeeDTO employeeDTO) throws IOException {
 
         if (employeeRepository.findById(employeeDTO.getEmployeeId()).isPresent()) {
             throw new APIException("Employee already exists with id " + employeeDTO.getEmployeeId());
@@ -59,9 +60,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         modelMapper.map(employeeDTO, employee);
 
-        if (image != null && !image.isEmpty()) {
-            String employeeImage = fileService.uploadImage(path, image);
-            employee.setEmployeeImage(employeeImage);
+        if (employeeImage != null && !employeeImage.isEmpty()) {
+            String image = fileService.uploadImage(path, employeeImage);
+            employee.setEmployeeImage(image);
         }
 
         if (employeeDTO.getDepartmentId() != null) {
@@ -125,20 +126,21 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
     @Override
-    public EmployeeDTO updateEmployee(String id, MultipartFile image, EmployeeDTO employeeDTO) throws IOException {
+    public EmployeeDTO updateEmployee(String id, MultipartFile employeeImage, EmployeeDTO employeeDTO) throws IOException {
 
         Employee updateEmployee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EmployeeNotFoundException("Employee not found with id: " + id));
 
-        if (image != null && !image.isEmpty()) {
-            String fileName = fileService.uploadImage(path, image);
+        modelMapper.map(employeeDTO, updateEmployee);
+        if (employeeImage != null && !employeeImage.isEmpty()) {
+            String fileName = fileService.uploadImage(path, employeeImage);
             updateEmployee.setEmployeeImage(fileName);
         }
-        modelMapper.map(employeeDTO, updateEmployee);
-        Employee  updatedEmployeeDetails=employeeRepository.save(updateEmployee);
+
+       employeeRepository.save(updateEmployee);
 
 
-        return modelMapper.map(updatedEmployeeDetails, EmployeeDTO.class);
+        return modelMapper.map(updateEmployee, EmployeeDTO.class);
     }
 
     @Override
@@ -230,18 +232,28 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
 
-    @Override
+
     public EmployeeDTO deleteEmployee(String employeeId) {
-        Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new EmployeeNotFoundException("employee not found with id: " + employeeId));
+            Employee employee = employeeRepository.findById(employeeId)
+                    .orElseThrow(() -> new EmployeeNotFoundException("Employee not found with id: " + employeeId));
 
-        for (Team team : employee.getTeams()) {
-            team.getEmployees().remove(employee);
-        }
 
-        employee.getTeams().clear();
+            for (Team team : employee.getTeams()) {
+                team.getEmployees().remove(employee);
+            }
 
-        employeeRepository.delete(employee);
+
+            for (Project project : employee.getProjects()) {
+                project.getEmployees().remove(employee);
+            }
+
+
+            employee.getTeams().clear();
+            employee.getProjects().clear();
+
+
+            employeeRepository.delete(employee);
+
         return modelMapper.map(employee, EmployeeDTO.class);
     }
 

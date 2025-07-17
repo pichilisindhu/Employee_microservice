@@ -1,12 +1,14 @@
 package com.hrms.project.entity;
 
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import lombok.*;
+
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -15,18 +17,21 @@ import lombok.*;
 @AllArgsConstructor
 @EqualsAndHashCode(exclude = "employee")
 @ToString(exclude = "employee")
-public class PanDetails {
+public class VoterId {
 
     @Id
-    private String panNumber;
-
-    private String panName;
-    private String dateOfBirth;
-    private String parentsName;
-    private String panImage;
+    private String voterIDNumber;
+    private String fullName;
+    private String relationName;
+    private String gender;
+    private LocalDate dateOfBirth;
+    private String Address;
+    private LocalDate issuedDate;
+    private String uploadVoter;
 
     @OneToOne
-    @JoinColumn(name = "employee_id")
+    @JoinColumn(name = "employee_id", referencedColumnName = "employeeId")
     @JsonBackReference
     private Employee employee;
+
 }

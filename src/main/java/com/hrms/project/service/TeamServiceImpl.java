@@ -141,7 +141,7 @@ public class TeamServiceImpl {
 
     }
 
-    public String addEmployee(String teamId, TeamController teamController) {
+    public String UpdateTeam(String teamId, TeamController teamController) {
 
 
         Team team = teamRepository.findById(teamId)
@@ -155,25 +155,39 @@ public class TeamServiceImpl {
                 employees.add(employee);
             }
         }
-
+        team.setTeamName(teamController.getTeamName());
+        team.setTeamDescription(teamController.getTeamDescription());
        team.getEmployees().addAll(employees);
         teamRepository.save(team);
 
-        List<Project> ongoingProjects = team.getProjects().stream()
-                .filter(project -> !"Completed".equalsIgnoreCase(project.getProjectStatus()))
-                .toList();
+
+//
+//        List<Project> ongoingProjects = team.getProjects().stream()
+//                .filter(project -> !"Completed".equalsIgnoreCase(project.getProjectStatus()))
+//                .toList();
+
+
+        Project project = projectRepository.findById(teamController.getProjectId())
+                .orElseThrow(() -> new ProjectNotFoundException("Project with ID doensn't exists " + teamController.getProjectId()));
+
+        if(project.getTeam() != null) {
+            throw new APIException("Project is already assigned to another team");
+        }
+
+
+            project.setTeam(team);
+            projectRepository.save(project);
+
 
         for (Employee employee : employees) {
-            for (Project project : ongoingProjects) {
-                if (!employee.getProjects().contains(project)) {
-                    employee.getProjects().add(project);
-                }
-            }
+
+            employee.getProjects().add(project);
+
         }
         employeeRepository.saveAll(employees);
 
 
-        return "Employees added to team successfully.";
+        return "Data added to team successfully.";
     }
 
 //    public void addProject(String teamId, TeamController teamController) {

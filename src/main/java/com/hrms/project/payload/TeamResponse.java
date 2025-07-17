@@ -1,7 +1,5 @@
 package com.hrms.project.payload;
 
-
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

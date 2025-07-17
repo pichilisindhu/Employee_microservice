@@ -25,7 +25,7 @@ public class FileServiceImpl implements FileService {
                 folder.mkdir();
 
             Files.copy(file.getInputStream(), Paths.get(filePath));
-            return fileName;
+            return filePath;
         }
      return null;
     }
