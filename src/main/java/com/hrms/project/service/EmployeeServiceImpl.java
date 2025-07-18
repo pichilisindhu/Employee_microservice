@@ -91,17 +91,9 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .orElseThrow(() -> new EmployeeNotFoundException("Employee not found with id: " + id));
         EmployeeDTO employeeDTO = modelMapper.map(employee, EmployeeDTO.class);
 
-//    List<String> projectNames = employee.getProjects()
-//            .stream()
-//            .map(Project -> Project.getTitle())
-//                    .toList();
-//
-//        employeeDTO.setProjects(projectNames);
-
         return employeeDTO;
 
     }
-
 
     @Override
     public List<EmployeeDTO> getAllEmployees() {
@@ -110,13 +102,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         for (Employee employee : employees) {
             EmployeeDTO employeeDTO = modelMapper.map(employee, EmployeeDTO.class);
-
-//            List<String> projectNames = employee.getProjects()
-//                    .stream()
-//                    .map(Project-> Project.getTitle())
-//                    .toList();
-//
-//            employeeDTO.setProjectNames(projectNames);
 
             allEmployeeDTOs.add(employeeDTO);
         }
@@ -258,6 +243,22 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
 }
+
+
+//    List<String> projectNames = employee.getProjects()
+//            .stream()
+//            .map(Project -> Project.getTitle())
+//                    .toList();
+//
+//        employeeDTO.setProjects(projectNames);
+
+
+//            List<String> projectNames = employee.getProjects()
+//                    .stream()
+//                    .map(Project-> Project.getTitle())
+//                    .toList();
+//
+//            employeeDTO.setProjectNames(projectNames);
 
 
 

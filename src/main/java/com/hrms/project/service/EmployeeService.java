@@ -18,6 +18,7 @@ public interface EmployeeService {
 
     List<EmployeeDTO> getAllEmployees();
 
+
     EmployeeDTO deleteEmployee(String id);
 
     EmployeeDTO updateEmployee(String id, MultipartFile employeeImage ,EmployeeDTO employeeDTO) throws IOException;

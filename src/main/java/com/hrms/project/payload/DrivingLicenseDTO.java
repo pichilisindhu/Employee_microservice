@@ -12,7 +12,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class DrivingLicenseDTO {
 
-    private String licenseImage;
 
     private String licenseNumber;
     private String name;
@@ -22,5 +21,5 @@ public class DrivingLicenseDTO {
     private LocalDate issueDate;
     private LocalDate expiresOn;
     private String address;
-    private String employeeId;
+
 }

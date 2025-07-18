@@ -6,17 +6,16 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class VoterDTO {
+public class AadhaarDTO {
 
-    private String fullName;
-    private String relationName;
-    private String gender;
+    private String aadhaarNumber;
+    private String enrollmentNumber;
     private LocalDate dateOfBirth;
-    private String Address;
-    private LocalDate issuedDate;
+    private String aadhaarName;
+    private String address;
+    private String gender;
 
 }

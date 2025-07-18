@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 public class PanDTO {
 
 
-    private String panImage;
     private String panNumber;
     private String panName;
     private String dateOfBirth;

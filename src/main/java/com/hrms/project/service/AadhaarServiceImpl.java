@@ -4,6 +4,7 @@ import com.hrms.project.entity.AadhaarCardDetails;
 import com.hrms.project.entity.Employee;
 import com.hrms.project.handlers.APIException;
 import com.hrms.project.handlers.EmployeeNotFoundException;
+import com.hrms.project.payload.AadhaarDTO;
 import com.hrms.project.repository.AadhaarDetailsRepository;
 import com.hrms.project.repository.EmployeeRepository;
 import org.modelmapper.ModelMapper;
@@ -32,59 +33,63 @@ public class AadhaarServiceImpl {
     @Value("${project.image}")
     private String path;
 
-    public AadhaarCardDetails createAadhaar(String employeeId, MultipartFile aadhaarImage,AadhaarCardDetails aadhaarCardDetails) throws IOException {
+    public AadhaarCardDetails createAadhaar(String employeeId, MultipartFile aadhaarImage, AadhaarCardDetails aadhaarCardDetails) throws IOException {
 
-        Employee employee=employeeRepository.findById(employeeId)
-                .orElseThrow(()->new EmployeeNotFoundException("employee not found with id: " + employeeId));
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new EmployeeNotFoundException("employee not found with id: " + employeeId));
 
-        if( aadhaarDetailsRepository.findById(aadhaarCardDetails.getAadhaarNumber()).isEmpty() ) {
+        if (aadhaarDetailsRepository.findByEmployee_EmployeeId(employeeId) != null) {
+            throw new APIException("This employee already has Aadhaar assigned");
+        }
+
+        AadhaarCardDetails cardDetails;
+
+        if (aadhaarDetailsRepository.findById(aadhaarCardDetails.getAadhaarNumber()).isEmpty()) {
+
             if (aadhaarImage != null && !aadhaarImage.isEmpty()) {
                 String fileName = fileService.uploadImage(path, aadhaarImage);
-               aadhaarCardDetails.setUploadAadhaar(fileName);
+                aadhaarCardDetails.setUploadAadhaar(fileName);
             }
+
             aadhaarCardDetails.setEmployee(employee);
-            aadhaarDetailsRepository.save(aadhaarCardDetails);
-        }
-        else
-        {
-            AadhaarCardDetails details=aadhaarDetailsRepository.findById(aadhaarCardDetails.getAadhaarNumber()).get();
-            if(details.getEmployee().getEmployeeId().isEmpty())
-            {
+            cardDetails = aadhaarDetailsRepository.save(aadhaarCardDetails);
+
+        } else {
+            AadhaarCardDetails details = aadhaarDetailsRepository.findById(aadhaarCardDetails.getAadhaarNumber()).get();
+
+            if (details.getEmployee() == null) {
                 details.setEmployee(employee);
-                aadhaarDetailsRepository.save(details);
-            }
-            else
-            {
-                throw new APIException("Current aadhaar card Details already exists with other employee");
+                cardDetails = aadhaarDetailsRepository.save(details);
+            } else {
+                throw new APIException("Current Aadhaar card is already assigned to another employee");
             }
         }
 
-        return aadhaarCardDetails;
+        return cardDetails;
     }
 
-    public AadhaarCardDetails getAadhaarByEmployeeId(String employeeId) {
+
+    public AadhaarDTO getAadhaarByEmployeeId(String employeeId) {
 
         Employee employee=employeeRepository.findById(employeeId).orElseThrow(() ->
                 new EmployeeNotFoundException("Employee Not Found with id: " + employeeId));
 
-        AadhaarCardDetails aadhaarCardDetails=aadhaarDetailsRepository.findByEmployee_EmployeeId(employeeId);
+        AadhaarCardDetails aadhaarCardDetails=employee.getAadhaarCardDetails();
         if(aadhaarCardDetails==null)
         {
             throw new APIException("Aadhaar card Details not found for the employee with id: " + employeeId);
         }
 
-        AadhaarCardDetails details=modelMapper.map(aadhaarCardDetails, AadhaarCardDetails.class);
-        details.setEmployee(employee);
+    return modelMapper.map(aadhaarCardDetails,AadhaarDTO.class);
 
-        return details;
     }
 
 
-    public AadhaarCardDetails updateAadhaar(String employeeId,MultipartFile aadhaarImage, AadhaarCardDetails aadhaarCardDetails) {
+    public AadhaarCardDetails updateAadhaar(String employeeId,MultipartFile aadhaarImage, AadhaarCardDetails aadhaarCardDetails) throws IOException {
         Employee employee=employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new EmployeeNotFoundException("Employee Not Found with the id: " + employeeId));
 
-        AadhaarCardDetails existing=aadhaarDetailsRepository.findByEmployee_EmployeeId(employeeId);
+        AadhaarCardDetails existing=employee.getAadhaarCardDetails();
         if(existing==null)
         {
             throw new APIException("Aadhaar card Details not found for employee with id: " + employeeId);
@@ -93,16 +98,17 @@ public class AadhaarServiceImpl {
         if (!existing.getAadhaarNumber().equals(aadhaarCardDetails.getAadhaarNumber())) {
             throw new APIException("Aadhaar number cannot be changed once submitted");
         }
+        if (aadhaarImage != null && !aadhaarImage.isEmpty()) {
+            String fileName = fileService.uploadImage(path, aadhaarImage);
+            existing.setUploadAadhaar(fileName);
+        }
 
-        existing.setGender(aadhaarCardDetails.getGender());
         existing.setDateOfBirth(aadhaarCardDetails.getDateOfBirth());
         existing.setAadhaarName(aadhaarCardDetails.getAadhaarName());
-        existing.setAadhaarNumber(aadhaarCardDetails.getAadhaarNumber());
         existing.setGender(aadhaarCardDetails.getGender());
-        existing.setUploadAadhaar(aadhaarCardDetails.getUploadAadhaar());
+        existing.setAddress(aadhaarCardDetails.getAddress());
 
-        AadhaarCardDetails aadhaarDetails=aadhaarDetailsRepository.save(existing);
+        return aadhaarDetailsRepository.save(existing);
 
-        return aadhaarDetails;
     }
 }

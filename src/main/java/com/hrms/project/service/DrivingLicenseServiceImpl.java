@@ -1,10 +1,12 @@
 package com.hrms.project.service;
 
+import com.hrms.project.entity.AadhaarCardDetails;
 import com.hrms.project.entity.DrivingLicense;
 import com.hrms.project.entity.Employee;
 import com.hrms.project.entity.PanDetails;
 import com.hrms.project.handlers.APIException;
 import com.hrms.project.handlers.EmployeeNotFoundException;
+import com.hrms.project.payload.AadhaarDTO;
 import com.hrms.project.payload.DrivingLicenseDTO;
 import com.hrms.project.payload.PanDTO;
 import com.hrms.project.repository.DrivingLicenseRepository;
@@ -37,7 +39,7 @@ public class DrivingLicenseServiceImpl {
     @Value("${project.image}")
     private String path;
 
-    public DrivingLicenseDTO createDrivingLicense(String employeeId, MultipartFile licenseImage,
+    public DrivingLicense createDrivingLicense(String employeeId, MultipartFile licenseImage,
                                                  DrivingLicense drivingLicense) throws IOException {
 
         Employee employee = employeeRepository.findById(employeeId)
@@ -53,7 +55,7 @@ public class DrivingLicenseServiceImpl {
            DrivingLicense license = existingLicense.get();
             if (license.getEmployee() == null) {
                 license.setEmployee(employee);
-                return modelMapper.map(drivingLicenseRepository.save(license), DrivingLicenseDTO.class);
+                return drivingLicenseRepository.save(license);
             } else {
                 throw new APIException("This License is already assigned to another employee");
             }
@@ -64,7 +66,7 @@ public class DrivingLicenseServiceImpl {
             String image = fileService.uploadImage(path, licenseImage);
             drivingLicense.setLicenseImage(image);
         }
-        return modelMapper.map(drivingLicenseRepository.save(drivingLicense), DrivingLicenseDTO.class);
+        return drivingLicenseRepository.save(drivingLicense);
     }
 
     public DrivingLicenseDTO getDrivingDetails(String employeeId) {
@@ -73,43 +75,41 @@ public class DrivingLicenseServiceImpl {
                 .orElseThrow(() -> new EmployeeNotFoundException("Employee not found with ID: " + employeeId));
        DrivingLicense details=employee.getDrivingLicense();
 
-        if(details!=null)
-        {
-           DrivingLicenseDTO drivingLicenseDTO=modelMapper.map(details,DrivingLicenseDTO.class);
-            drivingLicenseDTO.setEmployeeId(employeeId);
-            return drivingLicenseDTO;
-        }
-        else
+        if(details==null)
         {
             throw new APIException("This employee does not have a Driving License assigned");
+
+
         }
+        return modelMapper.map(details,DrivingLicenseDTO.class);
+
     }
 
 
-    public DrivingLicenseDTO updatedrivingDetails(String employeeId,MultipartFile licenseImage, DrivingLicenseDTO drivingLicenseDTO) {
+    public DrivingLicense updatedrivingDetails(String employeeId,MultipartFile licenseImage, DrivingLicense drivingLicense) {
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new EmployeeNotFoundException("Employee not found with ID: " + employeeId));
 
-        DrivingLicense existing=drivingLicenseRepository.findByEmployee_EmployeeId(employeeId)
-                .orElseThrow(() -> new APIException("Driving License not found for employee: " + employeeId));
+        DrivingLicense existing=employee.getDrivingLicense();
+        if(existing==null)
+        {
+            throw new APIException("This employee does not have a Driving License assigned");
+        }
 
-
-
-        if (!existing.getLicenseNumber().equals(drivingLicenseDTO.getLicenseNumber())) {
+        if (!existing.getLicenseNumber().equals(drivingLicense.getLicenseNumber())) {
             throw new APIException("Driving  number cannot be changed once submitted");
         }
-       existing.setName(drivingLicenseDTO.getName());
-        existing.setDateOfBirth(drivingLicenseDTO.getDateOfBirth());
-        existing.setBloodGroup(drivingLicenseDTO.getBloodGroup());
-        existing.setFatherName(drivingLicenseDTO.getFatherName());
-        existing.setIssueDate(drivingLicenseDTO.getIssueDate());
-        existing.setExpiresOn(drivingLicenseDTO.getExpiresOn());
-        existing.setAddress(drivingLicenseDTO.getAddress());
-        existing.setLicenseImage(drivingLicenseDTO.getLicenseImage());
+        existing.setName(drivingLicense.getName());
+        existing.setDateOfBirth(drivingLicense.getDateOfBirth());
+        existing.setBloodGroup(drivingLicense.getBloodGroup());
+        existing.setFatherName(drivingLicense.getFatherName());
+        existing.setIssueDate(drivingLicense.getIssueDate());
+        existing.setExpiresOn(drivingLicense.getExpiresOn());
+        existing.setAddress(drivingLicense.getAddress());
 
-        DrivingLicense details=drivingLicenseRepository.save(existing);
+        return  drivingLicenseRepository.save(existing);
 
-        return modelMapper.map(details, DrivingLicenseDTO.class);
+
     }
 
 

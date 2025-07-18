@@ -14,12 +14,12 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(exclude = {
-        "teams", "projects", "department","voterId",
-        "panDetails", "drivingLicense", "passportDetails", "aadhaarCardDetails"
+        "teams", "projects", "department","voterDetails",
+        "panDetails", "drivingLicense", "passportDetails", "aadhaarCardDetails","degreeCertificates"
 })
 @ToString(exclude = {
-        "teams", "projects", "department","voterId",
-        "panDetails", "drivingLicense", "passportDetails", "aadhaarCardDetails"
+        "teams", "projects", "department","voterDetails",
+        "panDetails", "drivingLicense", "passportDetails", "aadhaarCardDetails","degreeCertificates"
 })
 public class Employee {
 
@@ -95,7 +95,16 @@ public class Employee {
 
     @OneToOne(mappedBy = "employee",cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private VoterId voterId;
+    private VoterDetails voterDetails;
+
+    @OneToMany(mappedBy="employee")
+    @JsonManagedReference
+    private List<DegreeCertificates> degreeCertificates;
+
+    @OneToMany(mappedBy="employee")
+    @JsonManagedReference
+    private List<Achievements> achievements;
+
 
 }
 

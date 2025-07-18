@@ -17,7 +17,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @EqualsAndHashCode(exclude = "employee")
 @ToString(exclude = "employee")
-public class VoterId {
+public class VoterDetails {
 
     @Id
     private String voterIDNumber;

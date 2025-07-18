@@ -89,30 +89,31 @@ public class PanServiceImpl {
 
     }
 
-    public PanDTO UpdatePanDetails(String employeeId, MultipartFile PanImage,PanDTO panDetailsDTO)  {
+    public PanDetails UpdatePanDetails(String employeeId, MultipartFile panImage,PanDetails panDetails)  throws IOException {
 
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new EmployeeNotFoundException("Employee not found with ID: " + employeeId));
 
-       PanDetails existing=panDetailsRepository.findByEmployee_EmployeeId(employeeId)
-                .orElseThrow(() -> new APIException("Pan Details not found for employee: " + employeeId));
-
-
-
-        if (!existing.getPanNumber().equals(panDetailsDTO.getPanNumber())) {
-            throw new APIException("Driving  number cannot be changed once submitted");
+        PanDetails existing = employee.getPanDetails();
+        if (existing == null) {
+            throw new APIException("PAN Details not found for employee: " + employeeId);
         }
-        existing.setPanName(panDetailsDTO.getPanName());
-        existing.setDateOfBirth(panDetailsDTO.getDateOfBirth());
-        existing.setParentsName(panDetailsDTO.getParentsName());
-        existing.setPanNumber(existing.getPanNumber());
+
+        if (!existing.getPanNumber().equals(panDetails.getPanNumber())) {
+            throw new APIException("Pan number cannot be changed once submitted");
+        }
+
+        if (panImage != null && !panImage.isEmpty()) {
+            String image = fileService.uploadImage(path, panImage);
+           existing.setPanImage(image);
+        }
+        existing.setPanName(panDetails.getPanName());
+        existing.setDateOfBirth(panDetails.getDateOfBirth());
+        existing.setParentsName(panDetails.getParentsName());
+        existing.setPanNumber(panDetails.getPanNumber());
 
         PanDetails updated=panDetailsRepository.save(existing);
-
-
-
-
-        return modelMapper.map(updated, PanDTO.class);
+        return modelMapper.map(updated, PanDetails.class);
     }
 }
 

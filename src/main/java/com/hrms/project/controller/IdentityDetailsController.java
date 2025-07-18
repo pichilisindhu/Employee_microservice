@@ -1,13 +1,7 @@
 package com.hrms.project.controller;
 
-import com.hrms.project.entity.AadhaarCardDetails;
-import com.hrms.project.entity.DrivingLicense;
-import com.hrms.project.entity.PanDetails;
-import com.hrms.project.entity.PassportDetails;
-import com.hrms.project.payload.DrivingLicenseDTO;
-import com.hrms.project.payload.PanDTO;
-import com.hrms.project.payload.PassportDetailsDTO;
-import com.hrms.project.payload.VoterDto;
+import com.hrms.project.entity.*;
+import com.hrms.project.payload.*;
 import com.hrms.project.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,7 +25,7 @@ public class IdentityDetailsController {
     private DrivingLicenseServiceImpl drivingLicenseServiceImpl;
 
     @Autowired
-    private PassportDetailsImpl passportDetailsImpl;
+    private PassportDetailsServiceImpl passportDetailsImpl;
 
 
     @Autowired
@@ -44,8 +38,8 @@ public class IdentityDetailsController {
 }
 
     @GetMapping("/{employeeId}/aadhaar")
-    public ResponseEntity<AadhaarCardDetails>getAadhaar(@PathVariable String employeeId){
-        AadhaarCardDetails aadhaarDTO=aadhaarServiceImpl.getAadhaarByEmployeeId(employeeId);
+    public ResponseEntity<AadhaarDTO>getAadhaar(@PathVariable String employeeId){
+        AadhaarDTO aadhaarDTO=aadhaarServiceImpl.getAadhaarByEmployeeId(employeeId);
         return new ResponseEntity<>(aadhaarDTO, HttpStatus.OK);
 
     }
@@ -74,27 +68,27 @@ public ResponseEntity<PanDTO> getPanDetails(@PathVariable String employeeId){
 }
 
 @PutMapping("/{employeeId}/pan")
-public ResponseEntity<PanDTO> updatePanDetails(@PathVariable String employeeId,
+public ResponseEntity<PanDetails> updatePanDetails(@PathVariable String employeeId,
                                                @RequestPart(value="panImage", required = false) MultipartFile panImage,
-                                               @RequestPart PanDTO panDetailsDTO) {
-    return new ResponseEntity<>(panServiceImpl.UpdatePanDetails(employeeId,panImage,panDetailsDTO),HttpStatus.CREATED);
+                                               @RequestPart PanDetails panDetails) throws IOException {
+    return new ResponseEntity<>(panServiceImpl.UpdatePanDetails(employeeId,panImage,panDetails),HttpStatus.CREATED);
 }
 
 
 
 
 @PostMapping("/driving/license/{employeeId}")
-    public ResponseEntity<DrivingLicenseDTO> saveLicense(@PathVariable String employeeId,
+    public ResponseEntity<DrivingLicense> saveLicense(@PathVariable String employeeId,
                                                          @RequestPart(value="licenseImage", required = false) MultipartFile licenseImage,
                                                   @RequestPart DrivingLicense drivingLicense) throws IOException {
     return new ResponseEntity<>(drivingLicenseServiceImpl.createDrivingLicense(employeeId,licenseImage,drivingLicense),HttpStatus.CREATED);
 
 }
 @PutMapping("/{employeeId}/driving")
-public ResponseEntity<DrivingLicenseDTO> updateDrivingLicense(@PathVariable String employeeId,
+public ResponseEntity<DrivingLicense> updateDrivingLicense(@PathVariable String employeeId,
                                                               @RequestPart(value="licenseImage", required = false) MultipartFile licenseImage,
-                                                             @RequestPart DrivingLicenseDTO drivingLicenseDTO){
-    return new ResponseEntity<>(drivingLicenseServiceImpl.updatedrivingDetails(employeeId,licenseImage,drivingLicenseDTO),HttpStatus.CREATED);
+                                                             @RequestPart DrivingLicense drivingLicense){
+    return new ResponseEntity<>(drivingLicenseServiceImpl.updatedrivingDetails(employeeId,licenseImage,drivingLicense),HttpStatus.CREATED);
 }
 
 @GetMapping("/{employeeId}/driving")
@@ -107,7 +101,7 @@ public ResponseEntity<DrivingLicenseDTO> getDrivingLicense(@PathVariable String 
 
 
 @PostMapping("/passport/details/{employeeId}")
-public ResponseEntity<PassportDetailsDTO> savePassportDetails(@PathVariable String employeeId,
+public ResponseEntity<PassportDetails> savePassportDetails(@PathVariable String employeeId,
                                                               @RequestPart(value="passportImage", required = false) MultipartFile passportImage,
                                                               @RequestPart PassportDetails passportDetails) throws IOException {
     return new ResponseEntity<>(passportDetailsImpl.createPassport(employeeId,passportImage,passportDetails),HttpStatus.CREATED);
@@ -118,32 +112,32 @@ public ResponseEntity<PassportDetailsDTO> savePassportDetails(@PathVariable Stri
     return  new ResponseEntity<>(passportDetailsImpl.getPassportDetails(employeeId),HttpStatus.OK);
 }
 @PutMapping("/{employeeId}/passport")
-    public ResponseEntity<PassportDetailsDTO> updatePassportDetails(@PathVariable String employeeId,
+    public ResponseEntity<PassportDetails> updatePassportDetails(@PathVariable String employeeId,
                                                                     @RequestPart(value="passportImage", required = false) MultipartFile passportImage,
-                                                                    @RequestPart PassportDetailsDTO passportDetailsDTO){
-    return new ResponseEntity<>(passportDetailsImpl.updatePasswordDetails(employeeId,passportImage,passportDetailsDTO),HttpStatus.CREATED);
+                                                                    @RequestPart PassportDetails passportDetails) throws IOException {
+    return new ResponseEntity<>(passportDetailsImpl.updatePasswordDetails(employeeId,passportImage,passportDetails),HttpStatus.CREATED);
 }
 
     @PostMapping("/{employeeId}/voter")
-    public ResponseEntity<VoterDto>addVoter(@PathVariable String employeeId,
+    public ResponseEntity<VoterDetails>addVoter(@PathVariable String employeeId,
                                             @RequestPart(value="voterImage",required=false) MultipartFile voterImage,
-                                            @RequestPart VoterDto voterDto)throws IOException {
-        VoterDto voterDto1=voterIdServiceImpl.createVoter(employeeId,voterImage,voterDto);
-        return new ResponseEntity<>(voterDto1,HttpStatus.CREATED);
+                                            @RequestPart VoterDetails voterDetails)throws IOException {
+        VoterDetails voter=voterIdServiceImpl.createVoter(employeeId,voterImage,voterDetails);
+        return new ResponseEntity<>(voter,HttpStatus.CREATED);
     }
 
     @GetMapping("/{employeeId}/voter")
-    public ResponseEntity<VoterDto>getVoter(@PathVariable String employeeId){
-        VoterDto voterDto=voterIdServiceImpl.getVoterByEmployee(employeeId);
+    public ResponseEntity<VoterDTO>getVoter(@PathVariable String employeeId){
+        VoterDTO voterDto=voterIdServiceImpl.getVoterByEmployee(employeeId);
         return new ResponseEntity<>(voterDto,HttpStatus.OK);
     }
 
     @PutMapping("/{employeeId}/voter")
-    public ResponseEntity<VoterDto>updateVoter(@PathVariable String employeeId,
+    public ResponseEntity<VoterDetails>updateVoter(@PathVariable String employeeId,
                                                @RequestPart(value="voterImage",required=false) MultipartFile voterImage,
-                                               @RequestPart VoterDto voterDto) throws IOException {
-        VoterDto voterDto1=voterIdServiceImpl.updateVoter(employeeId,voterImage,voterDto);
-        return new ResponseEntity<>(voterDto1,HttpStatus.OK);
+                                               @RequestPart VoterDetails voterDetails) throws IOException {
+        VoterDetails voter=voterIdServiceImpl.updateVoter(employeeId,voterImage,voterDetails);
+        return new ResponseEntity<>(voter,HttpStatus.OK);
     }
 }
 

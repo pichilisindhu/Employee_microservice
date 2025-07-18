@@ -1,7 +1,9 @@
 package com.hrms.project.controller;
 
 
+import com.hrms.project.entity.DegreeCertificates;
 import com.hrms.project.payload.*;
+import com.hrms.project.service.DegreeServiceImpl;
 import com.hrms.project.service.EmployeeService;
 import com.hrms.project.service.FileService;
 
@@ -31,6 +33,9 @@ public class EmployeeController {
     @Value("${project.image}")
     private String path;
 
+    @Autowired
+    private DegreeServiceImpl degreeServiceImpl;
+
     @PostMapping("/employee")
     public ResponseEntity<EmployeeDTO> createEmployees(@RequestPart(value = "employeeImage", required = false) MultipartFile employeeImage,
                                                        @Valid @RequestPart(value = "employee") EmployeeDTO employeeDTO) throws IOException {
@@ -41,12 +46,12 @@ public class EmployeeController {
 
 
 
-
     @GetMapping("/employee/{employeeId}/contact")
     public ResponseEntity<ContactDetailsDTO> getContactDetails(@PathVariable String employeeId) {
         ContactDetailsDTO contactDetailsDTO = employeeService.getEmployeeContactDetails(employeeId);
         return new ResponseEntity<>(contactDetailsDTO, HttpStatus.OK);
     }
+
 
     @GetMapping("/all/employee/contact")
     public ResponseEntity<List<ContactDetailsDTO>> getAllContactDetails() {
@@ -115,6 +120,7 @@ public class EmployeeController {
     }
 
 
+
     @GetMapping("/employee/{id}")
     public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable String id) {
         EmployeeDTO employeeDetails = employeeService.getEmployeeById(id);
@@ -144,6 +150,28 @@ public class EmployeeController {
         EmployeeDTO deletedEmployee = employeeService.deleteEmployee(id);
         return new ResponseEntity<>(deletedEmployee, HttpStatus.OK);
 
+    }
+
+    @PostMapping("/{employeeId}/degreeDetails")
+    public ResponseEntity<DegreeCertificates>addDegree(@PathVariable String employeeId,
+                                                       @RequestPart("addFiles")MultipartFile addFiles,
+                                                       @RequestPart("degree") DegreeCertificates degreeCertificates ) throws IOException {
+        DegreeCertificates degree=degreeServiceImpl.addDegree(employeeId,addFiles,degreeCertificates);
+        return new ResponseEntity<>(degree,HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{employeeId}/degreeDetails")
+    public ResponseEntity<List<DegreeDTO>>getDetails(@PathVariable String  employeeId){
+        List<DegreeDTO>degreeDTOS=degreeServiceImpl.getDegree(employeeId);
+        return new ResponseEntity<>(degreeDTOS,HttpStatus.OK);
+    }
+
+    @PutMapping("/{employeeId}/degreeDetails")
+    public ResponseEntity<DegreeCertificates>updateDegree(@PathVariable String employeeId,
+                                                 @RequestPart("addFiles")MultipartFile addFiles,
+                                                 @RequestPart DegreeCertificates degreeCertificates) throws IOException {
+        DegreeCertificates degree =degreeServiceImpl.updateDegree(employeeId,addFiles,degreeCertificates);
+        return new ResponseEntity<>(degree,HttpStatus.OK);
     }
 
 }
